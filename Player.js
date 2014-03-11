@@ -1,5 +1,3 @@
-//git skuska
-
 function Player() {
     this.x = 0;
     this.y = 0;

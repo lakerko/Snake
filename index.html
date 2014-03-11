@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Snake Advanced</title>
+</head>
+<body>
+<script src="Hole.js"></script>
+<script src="Player.js"></script>
+<script src="Food.js"></script>
+<script>
+
+    var canvas = document.createElement("canvas");
+    var ctx = canvas.getContext("2d");
+    canvas.width = 320;
+    canvas.height = 320;
+    document.body.appendChild(canvas);
+
+    var keysDown = {};
+    var timing = 0;
+    var eaten = false;
+    var poop = [];
+    var score = 0;
+    var generateMap = false;
+
+    addEventListener("keydown", function(e) {
+        keysDown[e.keyCode] = true;
+    }, false);
+
+    addEventListener("keyup", function(e) {
+        delete keysDown[e.keyCode];
+    }, false);
+
+    var player = new Player();
+    var food = new Food();
+    var hole = new Hole();
+    var spawningFromHoleX = 50;
+    var spawningFromHoleY = 0;
+    var alreadyRunM1 = false;
+    var alreadyRunM2 = false;
+
+    var mapGenerator = function() {
+        ctx.fillStyle = "rgba(0, 255, 0, 1)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    var Hole = {
+        x: canvas.width / 2 - 10,
+        y: canvas.height / 2 - 10,
+        size: 20,
+
+        render: function() {
+            ctx.fillStyle = "rgba(255, 0 , 0, 0.4)";
+            ctx.fillRect(Hole.x, Hole.y, Hole.size, Hole.size);
+        }
+    }
+
+    var reset = function() {
+        score = 9;
+        poop = [];
+        player.reset();
+        food.spawn(hole);
+        generateMap = false;
+        alreadyRunM1 = false;
+        alreadyRunM2 = false;
+    }
+
+    var update = function(delta) {
+        if (score > 2 && score % 10 == 2) {
+            alreadyRunM1 = false;
+
+        }
+        if (score > 3 && score % 10 == 3) {
+            alreadyRunM2 = false;
+
+        }
+
+        hole.update();
+        if (score > 1 && score % 10 == 0) {
+            player.levelEntry(food);
+        } else if (score > 1 && score % 10 == 1){
+            player.fromHole();
+            player.levelExit(food);
+        } else if (score > 2 && score % 10 == 2){
+            player.fromHole();
+            player.catchFood(food);
+        } else {
+            player.catchFood(food);
+        }
+
+        player.update(delta);
+        player.bodyCollision();
+
+        if (eaten) {
+            player.eatFood();
+        }
+    }
+
+    var render = function() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.strokeStyle="#FF0000";
+        ctx.strokeRect(0, 0, canvas.width, canvas.height);
+        ctx.fillText("Score: "+score, canvas.width - 50, canvas.height - 10);
+
+        if (generateMap) {
+            mapGenerator();
+        }
+
+        player.render();
+        //if (score == 0 || (score % 10 != 0 && score > 1)) {
+        if (score > 1 && score % 10 == 0){
+            hole.render();
+        } else if (score > 2 && score % 10 == 1) {
+            hole.render();
+        } else {
+            food.render();
+        }
+
+        if (eaten) {
+            ctx.fillStyle = "rgba("+(poop[0] / 2)+", "+(poop[1] / 2)+","+(poop[0] / 2)+", 0.6)";
+            ctx.fillRect(poop[0], poop[1], 10, 10);
+        }
+    }
+
+    var main = function() {
+        var now = Date.now();
+        var delta = now - then;
+
+        update(delta);
+        render();
+
+        then = now;
+    }
+
+    reset();
+    var then = Date.now();
+    setInterval(main, 1);
+</script>
+</body>
+</html>

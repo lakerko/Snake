@@ -60,18 +60,20 @@ Player.prototype.setUp = function() {
 Player.prototype.update = function(delta) {
     timing += delta;
 
+    if (38 in keysDown && this.course != "down" && (this.aBody[0].x != this.aBody[1].x && this.aBody[0].y - 10 != this.aBody[1].y)) {
+        this.course = "up";
+    } else if (40 in keysDown && this.course != "up" && (this.aBody[0].x != this.aBody[1].x && this.aBody[0].y + 10 != this.aBody[1].y)) {
+        this.course = "down";
+    } else if (37 in keysDown && this.course != "right" && (this.aBody[0].x  - 10 != this.aBody[1].x && this.aBody[0].y != this.aBody[1].y)) {
+        this.course = "left";
+    } else if (39 in keysDown && this.course != "left" && (this.aBody[0].x + 10 != this.aBody[1].x && this.aBody[0].y != this.aBody[1].y)) {
+        this.course = "right";
+    }
+
     if (timing >= 100) {
         timing = 0;
 
-        if (38 in keysDown && this.course != "down") {
-            this.course = "up";
-        } else if (40 in keysDown && this.course != "up") {
-            this.course = "down";
-        } else if (37 in keysDown && this.course != "right") {
-            this.course = "left";
-        } else if (39 in keysDown && this.course != "left") {
-            this.course = "right";
-        }
+
 
         if (this.course == "") {
             this.course = "right";

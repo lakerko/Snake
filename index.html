@@ -7,12 +7,21 @@
 <script src="Hole.js"></script>
 <script src="Player.js"></script>
 <script src="Food.js"></script>
+<script src="Generator.js"></script>
 <script>
     var canvas = document.createElement("canvas");
     var ctx = canvas.getContext("2d");
     canvas.width = 320;
     canvas.height = 320;
     document.body.appendChild(canvas);
+
+    function GameDifficulty(GD) {
+        //this.lineFromHole = 0;
+
+        if (GD == "easy") {
+            this.lineFromHole = 12;
+        }
+    }
 
     var keysDown = {};
     var timing = 0;
@@ -32,26 +41,13 @@
     var player = new Player();
     var food = new Food();
     var hole = new Hole();
+    var gameDif = new GameDifficulty("easy");
     var spawningFromHoleX = 50;
     var spawningFromHoleY = 0;
     var alreadyRunM1 = false;
     var alreadyRunM2 = false;
-
-    var mapGenerator = function() {
-        ctx.fillStyle = "rgba(0, 255, 0, 1)";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-    }
-
-    var Hole = {
-        x: canvas.width / 2 - 10,
-        y: canvas.height / 2 - 10,
-        size: 20,
-
-        render: function() {
-            ctx.fillStyle = "rgba(255, 0 , 0, 0.4)";
-            ctx.fillRect(Hole.x, Hole.y, Hole.size, Hole.size);
-        }
-    }
+    var alreadyRunMG = false;
+    var aMap = [];
 
     var reset = function() {
         score = 9;
@@ -61,16 +57,16 @@
         generateMap = false;
         alreadyRunM1 = false;
         alreadyRunM2 = false;
+        alreadyRunMG = false;
     }
 
     var update = function(delta) {
         if (score > 2 && score % 10 == 2) {
             alreadyRunM1 = false;
-
         }
         if (score > 3 && score % 10 == 3) {
             alreadyRunM2 = false;
-
+            alreadyRunMG = false;
         }
 
         hole.update();
@@ -78,6 +74,7 @@
             player.levelEntry(food);
         } else if (score > 1 && score % 10 == 1){
             player.fromHole();
+            mapGenerator();
             player.levelExit(food);
         } else if (score > 2 && score % 10 == 2){
             player.fromHole();
@@ -101,11 +98,23 @@
         ctx.fillText("Score: "+score, canvas.width - 50, canvas.height - 10);
 
         if (generateMap) {
-            mapGenerator();
+            for (var i = 0; i < 32; i++) {
+                for (var j = 0; j < 32; j++) {
+                    if (aMap[i][j].name == "wall") {
+                        ctx.fillStyle = "rgba(0, 0, 0, 1)";
+                    } else if (aMap[i][j].name == "blank"){
+                        ctx.fillStyle = "rgba(150, 150, 150, 1)";
+                    } else if (aMap[i][j].name == "way") {
+                        ctx.fillStyle = "rgba(10, 200, 10, 1)";
+                    } else if (aMap[i][j].name == "hole") {
+                        ctx.fillStyle = "rgba(250, 10, 10, 1)";
+                    }
+                    ctx.fillRect(i * 10, j * 10, 10, 10);
+                }
+            }
         }
 
         player.render();
-        //if (score == 0 || (score % 10 != 0 && score > 1)) {
         if (score > 1 && score % 10 == 0){
             hole.render();
         } else if (score > 2 && score % 10 == 1) {

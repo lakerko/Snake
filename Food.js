@@ -33,7 +33,7 @@ Food.prototype.spawn = function(target) {
         this.x = newPositions[0];
         this.y = newPositions[1];
     }
-    console.log("ONE "+score+" x: "+this.x+" y: "+this.y);
+    //console.log("ONE "+score+" x: "+this.x+" y: "+this.y);
 }
 
 Food.prototype.render = function() {

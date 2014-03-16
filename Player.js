@@ -21,15 +21,13 @@ Player.prototype.fromHole = function() {
         return;
     }
 
-
     if (alreadyRunM2) {
         return;
     }
 
-
     if (score % 10 == 1) {
-        this.x = 50;
-        this.y = 0;
+        this.holeX = this.x = 50;
+        this.holeY = this.y = 0;
         this.course = "down";
         alreadyRunM1 = true;
     } else if (score % 10 == 2) {
@@ -135,7 +133,7 @@ Player.prototype.levelEntry = function(target) {
         console.log("Smajdova manka");
         score++;
         target.spawn(hole);
-        generateMap = true;
+        //generateMap = true;
     }
 }
 

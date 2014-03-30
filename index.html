@@ -50,7 +50,7 @@
     var aMap = [];
 
     var reset = function() {
-        score = 0;
+        score = 9;
         poop = [];
         player.reset();
         food.spawn(hole);
@@ -67,6 +67,7 @@
         if (score > 3 && score % 10 == 3) {
             alreadyRunM2 = false;
             alreadyRunMG = false;
+            aMap = [];
         }
 
         hole.update();
@@ -79,6 +80,7 @@
         } else if (score > 2 && score % 10 == 2){
             player.fromHole();
             player.catchFood(food);
+
         } else {
             player.catchFood(food);
         }

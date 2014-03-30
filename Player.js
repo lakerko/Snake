@@ -8,6 +8,13 @@ function Player() {
     this.bodyLength = 5;
 }
 
+Player.prototype.setUp = function() {
+    this.aBody = [];
+    this.x = 0;
+    this.y = 0;
+    this.course = "";
+}
+
 Player.prototype.reset = function() {
     this.setUp();
     for (var i = this.bodyLength - 1; i >= 0  ; i--) {
@@ -50,13 +57,6 @@ Player.prototype.fromHole = function() {
     }
 }
 
-Player.prototype.setUp = function() {
-    this.aBody = [];
-    this.x = 0;
-    this.y = 0;
-    this.course = "";
-}
-
 Player.prototype.update = function(delta) {
     timing += delta;
 
@@ -72,8 +72,6 @@ Player.prototype.update = function(delta) {
 
     if (timing >= 100) {
         timing = 0;
-
-
 
         if (this.course == "") {
             this.course = "right";
@@ -132,7 +130,6 @@ Player.prototype.eatFood = function() {
 Player.prototype.levelEntry = function(target) {
     if ((this.aBody[0].x == canvas.width / 2 - 10 || this.aBody[0].x == canvas.width / 2) &&
         (this.aBody[0].y == canvas.height / 2 - 10 || this.aBody[0].y == canvas.height / 2)) {
-        console.log("Smajdova manka");
         score++;
         target.spawn(hole);
         //generateMap = true;
@@ -142,7 +139,6 @@ Player.prototype.levelEntry = function(target) {
 Player.prototype.levelExit = function(target) {
     if ((this.aBody[0].x == canvas.width - 20 || this.aBody[0].x == canvas.width - 10) &&
         (this.aBody[0].y == canvas.height / 2 - 10 || this.aBody[0].y == canvas.height / 2)) {
-        console.log("Smajdova manka");
         score++;
         generateMap = false;
         target.spawn(hole);

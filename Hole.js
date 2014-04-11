@@ -8,7 +8,7 @@ Hole.prototype.update = function() {
     if (score > 1 && score % 10 == 0) {
         this.x = canvas.width / 2 - 10;
         this.y = canvas.height / 2 - 10;
-    } else if (score % 10 == 1){
+    } else if (score > 1 && score % 10 == 1){
         this.x = canvas.width - 20;
         this.y = canvas.height / 2 - 10;
         //console.log("KURWA MAC 11 x"+this.x+" y"+this.y);

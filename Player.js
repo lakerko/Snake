@@ -142,6 +142,7 @@ Player.prototype.levelExit = function(target) {
         score++;
         generateMap = false;
         target.spawn(hole);
+        //target.x =
     }
 }
 

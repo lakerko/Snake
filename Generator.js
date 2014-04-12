@@ -105,7 +105,6 @@ var mapGenerator = function() {
                 aMap[makerX][makerY].name = "way";
             }
         }
-
         if (aMap[spawnHoleX - 1][spawnHoleY - 1].name == "way" ||
             aMap[spawnHoleX - 1][spawnHoleY].name == "way" ||
             aMap[spawnHoleX - 1][spawnHoleY + 1].name == "way" ||
@@ -117,6 +116,8 @@ var mapGenerator = function() {
             legitWay = true;
         }
     }
+
+    mapAdjuster();
     generateMap = true;
     alreadyRunMG = true;
 }
@@ -140,5 +141,46 @@ function chunkWayFromRandom (direction, randomLength, makerX, makerY) {
             aMap[makerX][makerY].name = "way";
         }
         return makerY;
+    }
+}
+
+function mapAdjuster () {
+    for (var i = 0; i < 32; i++) {
+        for (var j = 0; j < 32; j++) {
+            if (aMap[i][j].name == "way") {
+                if (i - 1 > 0 && aMap[i - 1][j].name == "blank") {
+                    aMap[i - 1][j].name = "wayK";
+                }
+                if (i + 1 < 31 && aMap[i + 1][j].name == "blank") {
+                    aMap[i + 1][j].name = "wayK";
+                }
+                if (j - 1 > 0 && aMap[i][j - 1].name == "blank") {
+                    aMap[i][j - 1].name = "wayK";
+                }
+                if (j + 1 < 31 && aMap[i][j + 1].name == "blank") {
+                    aMap[i][j + 1].name = "wayK";
+                }
+            }
+        }
+    }
+
+    for (var i = 0; i < 32; i++) {
+        for (var j = 0; j < 32; j++) {
+            if (aMap[i][j].name == "blank") {
+                if (aMap[i - 1][j - 1].name == "way" || aMap[i - 1][j + 1].name == "way" || aMap[i + 1][j - 1].name == "way" || aMap[i + 1][j + 1].name == "way" ) {
+                    if ((aMap[i - 1][j].name == "wayK" || aMap[i + 1][j].name == "wayK") && (aMap[i][j - 1].name == "wayK" || aMap[i][j + 1].name == "wayK")) {
+                        aMap[i][j].name = "wayK";
+                    }
+                }
+            }
+        }
+    }
+
+    for (var i = 0; i < 32; i++) {
+        for (var j = 0; j < 32; j++) {
+            if (aMap[i][j].name == "wayK") {
+                aMap[i][j].name = "way";
+            }
+        }
     }
 }

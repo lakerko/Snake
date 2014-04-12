@@ -1,11 +1,11 @@
 function Hole() {
-    this.x = 0;
-    this.y = 0;
+    this.x = canvas.width / 2 - 10;
+    this.y = canvas.height / 2 - 10;
     this.size = 20;
 }
 
 Hole.prototype.update = function() {
-    if (score > 1 && score % 10 == 0) {
+    if (score > 1 && (score % 10 == 0 || score % 10 == 2)) {
         this.x = canvas.width / 2 - 10;
         this.y = canvas.height / 2 - 10;
     } else if (score > 1 && score % 10 == 1){
@@ -16,6 +16,6 @@ Hole.prototype.update = function() {
 }
 
 Hole.prototype.render = function() {
-    ctx.fillStyle = "rgba(255, 0 , 0, 0.4)";
+    ctx.fillStyle = "rgba(255, 0 , 0, 1)";
     ctx.fillRect(this.x, this.y, this.size, this.size);
 }

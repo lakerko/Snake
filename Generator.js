@@ -25,14 +25,14 @@ var mapGenerator = function() {
         aMap[0][i].name = "wall";
         aMap[31][i].name = "wall";
     }
-
     aMap[spawnHoleX][spawnHoleY].name = "hole";
     aMap[spawnHoleX][spawnHoleY + 1].name = "hole";
     aMap[spawnHoleX + 1][spawnHoleY].name = "hole";
     aMap[spawnHoleX + 1][spawnHoleY + 1].name = "hole";
     aMap[makerX][makerY].name = "way";
 
-    for (var i = 0; i <= gameDif.lineFromHole; i++) {
+    var randomAddition = Math.floor(Math.random()*10);
+    for (var i = 0; i <= gameDif.lineFromHole + randomAddition; i++) {
         makerY++;
         aMap[makerX][makerY].name = "way";
     }
@@ -54,19 +54,16 @@ var mapGenerator = function() {
             permitDown = true;
         }
 
-        while (!makerMoved) { //poziciu makerov menim uz tu, a z nej v dalsich krokoch vychadzaju. snad je to dobre.
+        while (!makerMoved) {
             var randomDirection = Math.floor(Math.random() * 3);
             if (randomDirection === 0 && permitRight) {
                 direction = "right";
-                //makerX++;
                 makerMoved = true;
             } else if (randomDirection === 1 && permitUp) {
                 direction = "up";
-                //makerY--;
                 makerMoved = "true";
             } else if (randomDirection === 2 && permitDown) {
                 direction = "down";
-                //makerY++;
                 makerMoved = true;
             }
         }
@@ -99,24 +96,29 @@ var mapGenerator = function() {
                     aMap[makerX][makerY].name = "way";
                 }
             }
-
-            for (var i = makerX; i < spawnHoleX - 1; i++) {
+            for (var i = makerX; i < spawnHoleX; i++) {
                 makerX++;
                 aMap[makerX][makerY].name = "way";
             }
         }
         if (aMap[spawnHoleX - 1][spawnHoleY - 1].name == "way" ||
-            aMap[spawnHoleX - 1][spawnHoleY].name == "way" ||
-            aMap[spawnHoleX - 1][spawnHoleY + 1].name == "way" ||
-            aMap[spawnHoleX - 1][spawnHoleY + 2].name == "way" ||
-            aMap[spawnHoleX][spawnHoleY - 1].name == "way" ||
-            aMap[spawnHoleX][spawnHoleY + 2].name == "way" ||
-            aMap[spawnHoleX + 1][spawnHoleY - 1].name == "way" ||
-            aMap[spawnHoleX + 1][spawnHoleY + 2].name == "way") {
+        aMap[spawnHoleX - 1][spawnHoleY].name == "way" ||
+        aMap[spawnHoleX - 1][spawnHoleY + 1].name == "way" ||
+        aMap[spawnHoleX - 1][spawnHoleY + 2].name == "way" ||
+        aMap[spawnHoleX][spawnHoleY - 1].name == "way" ||
+        aMap[spawnHoleX][spawnHoleY + 2].name == "way" ||
+        aMap[spawnHoleX + 1][spawnHoleY - 1].name == "way" ||
+        aMap[spawnHoleX + 1][spawnHoleY + 2].name == "way") {
+            for (var i = 0; i < 4; i++) {
+                for (var j = 0; j < 6; j++) {
+                    if (aMap[(spawnHoleX - 2) + i][(spawnHoleY - 2) + j].name == "blank" || aMap[(spawnHoleX - 2) + i][(spawnHoleY - 2) + j].name == "wall") {
+                        aMap[(spawnHoleX - 2) + i][(spawnHoleY - 2) + j].name = "way";
+                    }
+                }
+            }
             legitWay = true;
         }
     }
-
     mapAdjuster();
     generateMap = true;
     alreadyRunMG = true;
@@ -163,7 +165,6 @@ function mapAdjuster () {
             }
         }
     }
-
     for (var i = 0; i < 32; i++) {
         for (var j = 0; j < 32; j++) {
             if (aMap[i][j].name == "blank") {
@@ -175,11 +176,48 @@ function mapAdjuster () {
             }
         }
     }
-
+    for (var i = 0; i < 32; i++) {
+        for (var j = 0; j < 32; j++) {
+            if (aMap[i][j].name == "blank") {
+                if (aMap[i - 1][j].name == "wayK" && aMap[i - 2][j].name == "way" && aMap[i + 1][j].name == "blank") {
+                    aMap[i][j].name = "wayK";
+                }
+            }
+            if (aMap[i][j].name == "blank") {
+                if (aMap[i + 1][j].name == "wayK" && aMap[i + 2][j].name == "way" && aMap[i - 1][j].name == "blank") {
+                    aMap[i][j].name = "wayK";
+                }
+            }
+            if (aMap[i][j].name == "blank") {
+                if (aMap[i][j + 1].name == "wayK" && aMap[i][j + 2].name == "way" && aMap[i][j - 1].name == "blank") {
+                    aMap[i][j].name = "wayK";
+                }
+            }
+            if (aMap[i][j].name == "blank") {
+                if (aMap[i][j - 1].name == "wayK" && aMap[i][j - 2].name == "way" && aMap[i][j + 1].name == "blank") {
+                    aMap[i][j].name = "wayK";
+                }
+            }
+        }
+    }
+    for (var i = 0; i < 32; i++) {
+        for (var j = 0; j < 32; j++) {
+            if (aMap[i][j].name == "blank" && aMap[i - 1][j].name != "blank" && aMap[i + 1][j].name != "blank" && aMap[i][j - 1].name != "blank" && aMap[i][j + 1].name != "blank") {
+                aMap[i][j].name = "way";
+            }
+        }
+    }
     for (var i = 0; i < 32; i++) {
         for (var j = 0; j < 32; j++) {
             if (aMap[i][j].name == "wayK") {
                 aMap[i][j].name = "way";
+            }
+        }
+    }
+    for (var i = 0; i < 32; i++) {
+        for (var j = 0; j < 32; j++) {
+            if (aMap[i][j].name == "blank") {
+                aMap[i][j].name = "wall"
             }
         }
     }

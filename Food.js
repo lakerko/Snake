@@ -28,12 +28,10 @@ Food.prototype.spawn = function(target) {
     if (score > 0 && (score % 10 == 0 || score % 10 == 1)) {
         this.x = target.x;
         this.y = target.y;
-        //console.log("KURWA MAC x"+target.x+" y"+target.y);
     } else {
         this.x = newPositions[0];
         this.y = newPositions[1];
     }
-    //console.log("ONE "+score+" x: "+this.x+" y: "+this.y);
 }
 
 Food.prototype.render = function() {

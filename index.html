@@ -31,15 +31,6 @@
     var poop = [];
     var score = 0;
     var generateMap = false;
-
-    addEventListener("keydown", function(e) {
-        keysDown[e.keyCode] = true;
-    }, false);
-
-    addEventListener("keyup", function(e) {
-        delete keysDown[e.keyCode];
-    }, false);
-
     var player = new Player();
     var food = new Food();
     var hole = new Hole();
@@ -49,7 +40,22 @@
     var alreadyRunM1 = false;
     var alreadyRunM2 = false;
     var alreadyRunMG = false;
+    var holeAnimation = false;
+    var antiMovementPeriod = 0;
+    var animationCounter = 0;
     var aMap = [];
+
+    addEventListener("keydown", function (e) {
+        if (score > 1 && score % 10 == 1 && antiMovementPeriod < 3) {
+            keysDown[e.keyCode] = false;
+        } else {
+            keysDown[e.keyCode] = true;
+        }
+    }, false);
+
+    addEventListener("keyup", function (e) {
+        delete keysDown[e.keyCode];
+    }, false);
 
     var reset = function() {
         score = 9;
@@ -74,13 +80,35 @@
 
         hole.update();
         if (score > 1 && score % 10 == 0) {
-            player.levelEntry(food);
+            if (holeAnimation) {
+                if (animationCounter == 5) {
+                    score++;
+                    food.spawn(hole);
+                    animationCounter = 0;
+                    holeAnimation = false;
+                    player.aBodyAnimation = [];
+                }
+            } else {
+                player.levelEntry(food);
+            }
         } else if (score > 1 && score % 10 == 1){
+            poop = [];
             player.fromHole();
             if (!alreadyRunMG) {
                 mapGenerator();
             }
-            player.levelExit(food);
+            if (holeAnimation) {
+                if (animationCounter == 5) {
+                    score++;
+                    food.spawn(hole);
+                    animationCounter = 0;
+                    holeAnimation = false;
+                    generateMap = false;
+                    player.aBodyAnimation = [];
+                }
+            } else {
+                player.levelExit(food);
+            }
         } else if (score > 2 && score % 10 == 2){
             player.fromHole();
             player.catchFood(food);
@@ -91,6 +119,9 @@
 
         player.update(delta);
         player.bodyCollision();
+        if (score > 1 && score % 10 == 1 && generateMap) {
+            player.mapCollision();
+        }
 
         if (eaten) {
             player.eatFood();
@@ -101,7 +132,6 @@
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.strokeStyle="#FF0000";
         ctx.strokeRect(0, 0, canvas.width, canvas.height);
-        ctx.fillText("Score: "+score, canvas.width - 50, canvas.height - 10);
 
         if (generateMap) {
             for (var i = 0; i < 32; i++) {
@@ -117,20 +147,18 @@
                 }
             }
         }
-
-        player.render();
-        if (score > 1 && score % 10 == 0){
-            hole.render();
-        } else if (score > 2 && score % 10 == 1) {
+        if (score > 2 && (score % 10 == 0 || score % 10 == 1)){
             hole.render();
         } else {
             food.render();
         }
+        player.render();
 
         if (eaten) {
             ctx.fillStyle = "rgba("+(poop[0] / 2)+", "+(poop[1] / 2)+","+(poop[0] / 2)+", 0.6)";
             ctx.fillRect(poop[0], poop[1], 10, 10);
         }
+        ctx.fillText("Score: "+score, canvas.width - 50, canvas.height - 10);
     }
 
     var main = function() {

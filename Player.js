@@ -37,7 +37,7 @@ Player.prototype.update = function(delta) {
         this.course = "right";
     }
 
-    if (timing >= 100) {
+    if (timing >= gameDif.speed) {
         timing = 0;
 
         if (score > 1 && score % 10 == 1) {

@@ -16,14 +16,72 @@
     document.body.appendChild(canvas);
 
     function GameDifficulty(GD) {
-        //this.lineFromHole = 0;
-
         if (GD == "easy") {
             this.lineFromHole = 12;
             this.randomLow = 4;
             this.randomHigh = 7;
+            this.speed = 100;
+        } else if (GD == "normal") {
+            this.lineFromHole = 10;
+            this.randomLow = 4;
+            this.randomHigh = 5;
+            this.speed = 80;
+        } else if (GD == "hard") {
+            this.lineFromHole = 8;
+            this.randomLow = 2;
+            this.randomHigh = 4;
+            this.speed = 60;
+        } else if (GD == "jebe") {
+            this.lineFromHole = 5;
+            this.randomLow = 2;
+            this.randomHigh = 4;
+            this.speed = 40;
         }
     }
+
+    var goldenGod = new Image();
+    goldenGod.src = "images/ggp.png";
+
+    var headup = new Image();
+    headup.src = "images/headup.png";
+
+    var headdown = new Image();
+    headdown.src = "images/headdown.png";
+
+    var headright = new Image();
+    headright.src = "images/headright.png";
+
+    var headleft = new Image();
+    headleft.src = "images/headleft.png";
+
+    var body = new Image();
+    body.src = "images/body.png";
+
+    var bodyLD = new Image();
+    bodyLD.src = "images/bodyLD.png";
+
+    var bodyLH = new Image();
+    bodyLH.src = "images/bodyLH.png";
+
+    var bodyPH = new Image();
+    bodyPH.src = "images/bodyPH.png";
+
+    var bodyPD = new Image();
+    bodyPD.src = "images/bodyPD.png";
+
+    var tailup = new Image();
+    tailup.src = "images/tailup.png";
+
+    var taildown = new Image();
+    taildown.src = "images/taildown.png";
+
+    var tailright = new Image();
+    tailright.src = "images/tailright.png";
+
+    var tailleft = new Image();
+    tailleft.src = "images/tailleft.png";
+
+
 
     var keysDown = {};
     var timing = 0;
@@ -34,7 +92,7 @@
     var player = new Player();
     var food = new Food();
     var hole = new Hole();
-    var gameDif = new GameDifficulty("easy");
+    var gameDif;
     var spawningFromHoleX = 50;
     var spawningFromHoleY = 0;
     var alreadyRunM1 = false;
@@ -44,6 +102,8 @@
     var antiMovementPeriod = 0;
     var animationCounter = 0;
     var aMap = [];
+    var logoDelay = 0;
+    var playConfirm = false;
 
     addEventListener("keydown", function (e) {
         if (score > 1 && score % 10 == 1 && antiMovementPeriod < 3) {
@@ -152,12 +212,16 @@
         } else {
             food.render();
         }
+
         player.render();
 
         if (eaten) {
             ctx.fillStyle = "rgba("+(poop[0] / 2)+", "+(poop[1] / 2)+","+(poop[0] / 2)+", 0.6)";
             ctx.fillRect(poop[0], poop[1], 10, 10);
         }
+        ctx.font = "10px Helvetica";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
         ctx.fillText("Score: "+score, canvas.width - 50, canvas.height - 10);
     }
 
@@ -165,8 +229,42 @@
         var now = Date.now();
         var delta = now - then;
 
-        update(delta);
-        render();
+        if (keysDown[65] || keysDown[83] || keysDown[68] || keysDown[74]) {
+            if (keysDown[65]) {
+                gameDif = new GameDifficulty("easy");
+            } else if (keysDown[83]) {
+                gameDif = new GameDifficulty("normal");;
+            } else if (keysDown[68]) {
+                gameDif = new GameDifficulty("hard");
+            } else if (keysDown[74]) {
+                gameDif = new GameDifficulty("jebe");
+            }
+            reset();
+            playConfirm = true;
+            return;
+        }
+
+        logoDelay += delta;
+        if (logoDelay < 2500) {
+            ctx.drawImage(goldenGod, 0, 0);
+        } else if (logoDelay >= 2500 && !playConfirm) {
+            render();
+            ctx.fillStyle = "rgb(150, 150, 150)";
+            ctx.fillRect(20, canvas.height / 2 - 40, canvas.width - 40, 160);
+            ctx.fillStyle = "rgb(250, 250, 250)";
+            ctx.font = "30px Helvetica";
+            ctx.fillText("Choose difficulty", canvas.width / 2, canvas.height / 2);
+            ctx.font = "20px Helvetica";
+            ctx.textAlign = "left";
+            ctx.textBaseline = "top";
+            ctx.fillText("A - easy", canvas.width / 2 - 40, canvas.height / 2 + 20);
+            ctx.fillText("S - normal", canvas.width / 2 - 40, canvas.height / 2 + 40);
+            ctx.fillText("D - hard", canvas.width / 2 - 40, canvas.height / 2 + 60);
+            ctx.fillText("J - jebe?", canvas.width / 2 - 40, canvas.height / 2 + 80);
+        } else {
+            update(delta);
+            render();
+        }
 
         then = now;
     }

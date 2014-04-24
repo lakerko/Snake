@@ -7,6 +7,7 @@ function Player() {
     this.aBody = [];
     this.aBodyAnimation = [];
     this.bodyLength = 5;
+    this.inHoleDirection = "";
 }
 
 Player.prototype.setUp = function() {
@@ -83,34 +84,125 @@ Player.prototype.update = function(delta) {
 Player.prototype.render = function() {
     if (holeAnimation) {
         for (var i = 0; i < this.aBodyAnimation.length; i++) {
-            ctx.fillStyle = "rgba(30, 30, 30, 0.8)";
-            ctx.fillRect(this.aBodyAnimation[i].x, this.aBodyAnimation[i].y, this.width, this.height);
+            if (i == 0){
+                switch (this.inHoleDirection) {
+                    case "right":
+                        ctx.drawImage(bodyHR, this.aBodyAnimation[i].x, this.aBodyAnimation[i].y);
+                        break;
+                    case "left":
+                        ctx.drawImage(bodyHL, this.aBodyAnimation[i].x, this.aBodyAnimation[i].y);
+                        break;
+                    case "up":
+                        ctx.drawImage(bodyHD, this.aBodyAnimation[i].x, this.aBodyAnimation[i].y);
+                        break;
+                    case "down":
+                        ctx.drawImage(bodyHU, this.aBodyAnimation[i].x, this.aBodyAnimation[i].y);
+                        break;
+                }
+            } else if (i == this.aBodyAnimation.length - 1) {
+                if (this.aBodyAnimation[i].x > this.aBodyAnimation[i - 1].x) {
+                    ctx.drawImage(tailright, this.aBodyAnimation[i].x, this.aBodyAnimation[i].y);
+                } else if (this.aBodyAnimation[i].x < this.aBodyAnimation[i - 1].x) {
+                    ctx.drawImage(tailleft, this.aBodyAnimation[i].x, this.aBodyAnimation[i].y);
+                } else if (this.aBodyAnimation[i].y > this.aBodyAnimation[i - 1].y) {
+                    ctx.drawImage(taildown, this.aBodyAnimation[i].x, this.aBodyAnimation[i].y);
+                } else if (this.aBodyAnimation[i].y < this.aBodyAnimation[i - 1].y) {
+                    ctx.drawImage(tailup, this.aBodyAnimation[i].x, this.aBodyAnimation[i].y);
+                }
+            } else {
+                if (this.aBodyAnimation[i].x == this.aBodyAnimation[i - 1].x && this.aBodyAnimation[i].x == this.aBodyAnimation[i + 1].x) {
+                    ctx.drawImage(body, this.aBodyAnimation[i].x, this.aBodyAnimation[i].y);
+                } else if (this.aBodyAnimation[i].y == this.aBodyAnimation[i - 1].y && this.aBodyAnimation[i].y == this.aBodyAnimation[i + 1].y) {
+                    ctx.drawImage(body, this.aBodyAnimation[i].x, this.aBodyAnimation[i].y);
+                } else if ((this.aBodyAnimation[i].x < this.aBodyAnimation[i - 1].x && this.aBodyAnimation[i].y > this.aBodyAnimation[i + 1].y) || (this.aBodyAnimation[i].x < this.aBodyAnimation[i + 1].x && this.aBodyAnimation[i].y > this.aBodyAnimation[i - 1].y)) {
+                    ctx.drawImage(bodyLD, this.aBodyAnimation[i].x, this.aBodyAnimation[i].y);
+                } else if ((this.aBodyAnimation[i].x > this.aBodyAnimation[i - 1].x && this.aBodyAnimation[i].y > this.aBodyAnimation[i + 1].y) || (this.aBodyAnimation[i].x > this.aBodyAnimation[i + 1].x && this.aBodyAnimation[i].y > this.aBodyAnimation[i - 1].y)) {
+                    ctx.drawImage(bodyPD, this.aBodyAnimation[i].x, this.aBodyAnimation[i].y);
+                } else if ((this.aBodyAnimation[i].x > this.aBodyAnimation[i - 1].x && this.aBodyAnimation[i].y < this.aBodyAnimation[i + 1].y) || (this.aBodyAnimation[i].x > this.aBodyAnimation[i + 1].x && this.aBodyAnimation[i].y < this.aBodyAnimation[i - 1].y)) {
+                    ctx.drawImage(bodyPH, this.aBodyAnimation[i].x, this.aBodyAnimation[i].y);
+                } else if ((this.aBodyAnimation[i].x < this.aBodyAnimation[i - 1].x && this.aBodyAnimation[i].y < this.aBodyAnimation[i + 1].y) || (this.aBodyAnimation[i].x < this.aBodyAnimation[i + 1].x && this.aBodyAnimation[i].y < this.aBodyAnimation[i - 1].y)) {
+                    ctx.drawImage(bodyLH, this.aBodyAnimation[i].x, this.aBodyAnimation[i].y);
+                }
+            }
         }
-    } else {
+    } else if (!holeAnimationFix){
         for (var i = 0; i < this.aBody.length; i++) {
-            ctx.fillStyle = "rgba(30, 30, 30, 0.8)";
-            ctx.fillRect(this.aBody[i].x, this.aBody[i].y, this.width, this.height);
+            if (i == 0){
+                if (this.aBody[i].x > this.aBody[i + 1].x) {
+                    ctx.drawImage(headright, this.aBody[i].x, this.aBody[i].y);
+                } else if (this.aBody[i].x < this.aBody[i + 1].x) {
+                    ctx.drawImage(headleft, this.aBody[i].x, this.aBody[i].y);
+                } else if (this.aBody[i].y > this.aBody[i + 1].y) {
+                    ctx.drawImage(headdown, this.aBody[i].x, this.aBody[i].y);
+                } else if (this.aBody[i].y < this.aBody[i + 1].y) {
+                    ctx.drawImage(headup, this.aBody[i].x, this.aBody[i].y);
+                }
+            } else if (i == this.aBody.length - 1) {
+                if (this.aBody[i].x > this.aBody[i - 1].x) {
+                    ctx.drawImage(tailright, this.aBody[i].x, this.aBody[i].y);
+                } else if (this.aBody[i].x < this.aBody[i - 1].x) {
+                    ctx.drawImage(tailleft, this.aBody[i].x, this.aBody[i].y);
+                } else if (this.aBody[i].y > this.aBody[i - 1].y) {
+                    ctx.drawImage(taildown, this.aBody[i].x, this.aBody[i].y);
+                } else if (this.aBody[i].y < this.aBody[i - 1].y) {
+                    ctx.drawImage(tailup, this.aBody[i].x, this.aBody[i].y);
+                }
+            } else {
+                if (this.aBody[i].x == this.aBody[i - 1].x && this.aBody[i].x == this.aBody[i + 1].x) {
+                    ctx.drawImage(body, this.aBody[i].x, this.aBody[i].y);
+                } else if (this.aBody[i].y == this.aBody[i - 1].y && this.aBody[i].y == this.aBody[i + 1].y) {
+                    ctx.drawImage(body, this.aBody[i].x, this.aBody[i].y);
+                } else if ((this.aBody[i].x < this.aBody[i - 1].x && this.aBody[i].y > this.aBody[i + 1].y) || (this.aBody[i].x < this.aBody[i + 1].x && this.aBody[i].y > this.aBody[i - 1].y)) {
+                    ctx.drawImage(bodyLD, this.aBody[i].x, this.aBody[i].y);
+                } else if ((this.aBody[i].x > this.aBody[i - 1].x && this.aBody[i].y > this.aBody[i + 1].y) || (this.aBody[i].x > this.aBody[i + 1].x && this.aBody[i].y > this.aBody[i - 1].y)) {
+                    ctx.drawImage(bodyPD, this.aBody[i].x, this.aBody[i].y);
+                } else if ((this.aBody[i].x > this.aBody[i - 1].x && this.aBody[i].y < this.aBody[i + 1].y) || (this.aBody[i].x > this.aBody[i + 1].x && this.aBody[i].y < this.aBody[i - 1].y)) {
+                    ctx.drawImage(bodyPH, this.aBody[i].x, this.aBody[i].y);
+                } else if ((this.aBody[i].x < this.aBody[i - 1].x && this.aBody[i].y < this.aBody[i + 1].y) || (this.aBody[i].x < this.aBody[i + 1].x && this.aBody[i].y < this.aBody[i - 1].y)) {
+                    ctx.drawImage(bodyLH, this.aBody[i].x, this.aBody[i].y);
+                }
+            }
         }
     }
 }
 
-Player.prototype.levelEntry = function(target) {
+Player.prototype.levelEntry = function() {
     if ((this.aBody[0].x == canvas.width / 2 - 10 || this.aBody[0].x == canvas.width / 2) &&
         (this.aBody[0].y == canvas.height / 2 - 10 || this.aBody[0].y == canvas.height / 2)) {
-        holeAnimation = true;
         for (var i = 0; i < this.aBody.length; i++) {
             this.aBodyAnimation[i] = this.aBody[i];
         }
+        if (this.aBodyAnimation[0].x > this.aBodyAnimation[1].x) {
+            this.inHoleDirection = "right";
+        } else if (this.aBodyAnimation[0].x < this.aBodyAnimation[1].x) {
+            this.inHoleDirection = "left";
+        } else if (this.aBodyAnimation[0].y > this.aBodyAnimation[1].y) {
+            this.inHoleDirection = "up";
+        } else if (this.aBodyAnimation[0].y < this.aBodyAnimation[1].y) {
+            this.inHoleDirection = "down";
+        }
+        holeAnimation = true;
+        holeAnimationFix = true;
     }
 }
 
-Player.prototype.levelExit = function(target) {
+Player.prototype.levelExit = function() {
     if ((this.aBody[0].x == canvas.width - 20 || this.aBody[0].x == canvas.width - 10) &&
         (this.aBody[0].y == canvas.height / 2 - 10 || this.aBody[0].y == canvas.height / 2)) {
-        holeAnimation = true;
         for (var i = 0; i < this.aBody.length; i++) {
             this.aBodyAnimation[i] = this.aBody[i];
         }
+        if (this.aBodyAnimation[0].x > this.aBodyAnimation[1].x) {
+            this.inHoleDirection = "right";
+        } else if (this.aBodyAnimation[0].x < this.aBodyAnimation[1].x) {
+            this.inHoleDirection = "left";
+        } else if (this.aBodyAnimation[0].y > this.aBodyAnimation[1].y) {
+            this.inHoleDirection = "up";
+        } else if (this.aBodyAnimation[0].y < this.aBodyAnimation[1].y) {
+            this.inHoleDirection = "down";
+        }
+        holeAnimation = true;
+        holeAnimationFix = true;
     }
 }
 
@@ -164,17 +256,9 @@ Player.prototype.mapCollision = function() {
 
 Player.prototype.catchFood = function(target) {
     if (this.aBody[0].x ==  target.x && this.aBody[0].y == target.y) {
-        poop = [target.x, target.y];
-        eaten = true;
-        score++;
-        target.spawn(hole);
-    }
-}
 
-Player.prototype.eatFood = function() {
-    if (this.aBody[this.aBody.length - 1].x == poop[0] && this.aBody[this.aBody.length - 1].y == poop[1]) {
+        score++;
         this.aBody.push({x: this.aBody[this.aBody.length - 1].x, y: this.aBody[this.aBody.length - 1].y});
-        eaten = false;
-        poop = [];
+        target.spawn(hole);
     }
 }

@@ -4,6 +4,7 @@
     <title>Snake Advanced</title>
 </head>
 <body>
+<script src="images.js"></script>
 <script src="Hole.js"></script>
 <script src="Player.js"></script>
 <script src="Food.js"></script>
@@ -18,75 +19,29 @@
     function GameDifficulty(GD) {
         if (GD == "easy") {
             this.lineFromHole = 12;
-            this.randomLow = 4;
-            this.randomHigh = 7;
+            this.randomLow = 2;
+            this.randomHigh = 4;
             this.speed = 100;
         } else if (GD == "normal") {
             this.lineFromHole = 10;
-            this.randomLow = 4;
-            this.randomHigh = 5;
+            this.randomLow = 2;
+            this.randomHigh = 4;
             this.speed = 80;
         } else if (GD == "hard") {
             this.lineFromHole = 8;
-            this.randomLow = 2;
-            this.randomHigh = 4;
+            this.randomLow = 4;
+            this.randomHigh = 6;
             this.speed = 60;
         } else if (GD == "jebe") {
             this.lineFromHole = 5;
-            this.randomLow = 2;
-            this.randomHigh = 4;
+            this.randomLow = 5;
+            this.randomHigh = 7;
             this.speed = 40;
         }
     }
 
-    var goldenGod = new Image();
-    goldenGod.src = "images/ggp.png";
-
-    var headup = new Image();
-    headup.src = "images/headup.png";
-
-    var headdown = new Image();
-    headdown.src = "images/headdown.png";
-
-    var headright = new Image();
-    headright.src = "images/headright.png";
-
-    var headleft = new Image();
-    headleft.src = "images/headleft.png";
-
-    var body = new Image();
-    body.src = "images/body.png";
-
-    var bodyLD = new Image();
-    bodyLD.src = "images/bodyLD.png";
-
-    var bodyLH = new Image();
-    bodyLH.src = "images/bodyLH.png";
-
-    var bodyPH = new Image();
-    bodyPH.src = "images/bodyPH.png";
-
-    var bodyPD = new Image();
-    bodyPD.src = "images/bodyPD.png";
-
-    var tailup = new Image();
-    tailup.src = "images/tailup.png";
-
-    var taildown = new Image();
-    taildown.src = "images/taildown.png";
-
-    var tailright = new Image();
-    tailright.src = "images/tailright.png";
-
-    var tailleft = new Image();
-    tailleft.src = "images/tailleft.png";
-
-
-
     var keysDown = {};
     var timing = 0;
-    var eaten = false;
-    var poop = [];
     var score = 0;
     var generateMap = false;
     var player = new Player();
@@ -97,13 +52,13 @@
     var spawningFromHoleY = 0;
     var alreadyRunM1 = false;
     var alreadyRunM2 = false;
-    var alreadyRunMG = false;
     var holeAnimation = false;
     var antiMovementPeriod = 0;
     var animationCounter = 0;
     var aMap = [];
     var logoDelay = 0;
     var playConfirm = false;
+    var holeAnimationFix = false;
 
     addEventListener("keydown", function (e) {
         if (score > 1 && score % 10 == 1 && antiMovementPeriod < 3) {
@@ -119,72 +74,65 @@
 
     var reset = function() {
         score = 9;
-        poop = [];
         player.reset();
         food.spawn(hole);
         generateMap = false;
         alreadyRunM1 = false;
         alreadyRunM2 = false;
-        alreadyRunMG = false;
     }
 
     var update = function(delta) {
         if (score > 2 && score % 10 == 2) {
+            holeAnimationFix = false;
             alreadyRunM1 = false;
         }
         if (score > 3 && score % 10 == 3) {
             alreadyRunM2 = false;
-            alreadyRunMG = false;
             aMap = [];
         }
 
         hole.update();
+        player.update(delta);
+        player.bodyCollision();
         if (score > 1 && score % 10 == 0) {
             if (holeAnimation) {
                 if (animationCounter == 5) {
+                    holeAnimation = false;
+                    animationCounter = 0;
+                    player.aBodyAnimation = [];
                     score++;
                     food.spawn(hole);
-                    animationCounter = 0;
-                    holeAnimation = false;
-                    player.aBodyAnimation = [];
                 }
             } else {
-                player.levelEntry(food);
+                player.levelEntry();
             }
         } else if (score > 1 && score % 10 == 1){
-            poop = [];
             player.fromHole();
-            if (!alreadyRunMG) {
+            if (!generateMap) {
                 mapGenerator();
             }
             if (holeAnimation) {
                 if (animationCounter == 5) {
+                    holeAnimation = false;
+                    animationCounter = 0;
+                    player.aBodyAnimation = [];
                     score++;
                     food.spawn(hole);
-                    animationCounter = 0;
-                    holeAnimation = false;
                     generateMap = false;
-                    player.aBodyAnimation = [];
                 }
             } else {
-                player.levelExit(food);
+                player.levelExit();
             }
         } else if (score > 2 && score % 10 == 2){
             player.fromHole();
             player.catchFood(food);
-            alreadyRunMG = false;
+
         } else {
             player.catchFood(food);
         }
 
-        player.update(delta);
-        player.bodyCollision();
         if (score > 1 && score % 10 == 1 && generateMap) {
             player.mapCollision();
-        }
-
-        if (eaten) {
-            player.eatFood();
         }
     }
 
@@ -215,10 +163,6 @@
 
         player.render();
 
-        if (eaten) {
-            ctx.fillStyle = "rgba("+(poop[0] / 2)+", "+(poop[1] / 2)+","+(poop[0] / 2)+", 0.6)";
-            ctx.fillRect(poop[0], poop[1], 10, 10);
-        }
         ctx.font = "10px Helvetica";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";

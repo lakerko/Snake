@@ -121,7 +121,7 @@ var mapGenerator = function() {
     }
     mapAdjuster();
     generateMap = true;
-    alreadyRunMG = true;
+    holeAnimationFix = false;
 }
 
 function chunkWayFromRandom (direction, randomLength, makerX, makerY) {

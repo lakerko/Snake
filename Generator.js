@@ -120,6 +120,7 @@ var mapGenerator = function() {
         }
     }
     mapAdjuster();
+    mapGraphics();
     generateMap = true;
     holeAnimationFix = false;
 }
@@ -176,26 +177,28 @@ function mapAdjuster () {
             }
         }
     }
-    for (var i = 0; i < 32; i++) {
-        for (var j = 0; j < 32; j++) {
-            if (aMap[i][j].name == "blank") {
-                if (aMap[i - 1][j].name == "wayK" && aMap[i - 2][j].name == "way" && aMap[i + 1][j].name == "blank") {
-                    aMap[i][j].name = "wayK";
+    if (diff) {
+        for (var i = 0; i < 32; i++) {
+            for (var j = 0; j < 32; j++) {
+                if (aMap[i][j].name == "blank") {
+                    if (aMap[i - 1][j].name == "wayK" && aMap[i - 2][j].name == "way" && aMap[i + 1][j].name == "blank") {
+                        aMap[i][j].name = "wayK";
+                    }
                 }
-            }
-            if (aMap[i][j].name == "blank") {
-                if (aMap[i + 1][j].name == "wayK" && aMap[i + 2][j].name == "way" && aMap[i - 1][j].name == "blank") {
-                    aMap[i][j].name = "wayK";
+                if (aMap[i][j].name == "blank") {
+                    if (aMap[i + 1][j].name == "wayK" && aMap[i + 2][j].name == "way" && aMap[i - 1][j].name == "blank") {
+                        aMap[i][j].name = "wayK";
+                    }
                 }
-            }
-            if (aMap[i][j].name == "blank") {
-                if (aMap[i][j + 1].name == "wayK" && aMap[i][j + 2].name == "way" && aMap[i][j - 1].name == "blank") {
-                    aMap[i][j].name = "wayK";
+                if (aMap[i][j].name == "blank") {
+                    if (aMap[i][j + 1].name == "wayK" && aMap[i][j + 2].name == "way" && aMap[i][j - 1].name == "blank") {
+                        aMap[i][j].name = "wayK";
+                    }
                 }
-            }
-            if (aMap[i][j].name == "blank") {
-                if (aMap[i][j - 1].name == "wayK" && aMap[i][j - 2].name == "way" && aMap[i][j + 1].name == "blank") {
-                    aMap[i][j].name = "wayK";
+                if (aMap[i][j].name == "blank") {
+                    if (aMap[i][j - 1].name == "wayK" && aMap[i][j - 2].name == "way" && aMap[i][j + 1].name == "blank") {
+                        aMap[i][j].name = "wayK";
+                    }
                 }
             }
         }
@@ -219,6 +222,31 @@ function mapAdjuster () {
             if (aMap[i][j].name == "blank") {
                 aMap[i][j].name = "wall"
             }
+        }
+    }
+    aMap[30][15].name = "way";
+    aMap[30][16].name = "way";
+    aMap[31][15].name = "way";
+    aMap[31][16].name = "way";
+}
+
+function mapGraphics () {
+    for (var i = 0; i < 32; i++) {
+        for (var j = 0; j < 32; j++) {
+            if (aMap[i][j].name == "wall") {
+                aMap[i][j].img = aRock[Math.floor(Math.random() * aRock.length)];
+            } else if (aMap[i][j].name == "way") {
+                aMap[i][j].img = aWay[Math.floor(Math.random() * aWay.length)];
+            }
+        }
+    }
+}
+
+function mapRender () {
+
+    for (var i = 0; i < 32; i++) {
+        for (var j = 0; j < 32; j++) {
+            ctx.drawImage(aMap[i][j].img, i*10, j*10);
         }
     }
 }

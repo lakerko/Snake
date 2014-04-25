@@ -74,9 +74,11 @@ Player.prototype.update = function(delta) {
 
     if (score > 1 && score % 10 == 1) {
         if (this.aBody[0].x  < 0 || this.aBody[0].x  + this.width > canvas.width || this.aBody[0].y < 0 || this.aBody[0].y + this.height > canvas.height) {
+            theme.load();
             reset();
         }
     } else if (this.aBody[0].x  < 0 || this.aBody[0].x  + this.width > canvas.width || this.aBody[0].y < 0 || this.aBody[0].y + this.height > canvas.height) {
+        theme.load();
         reset();
     }
 }
@@ -241,6 +243,7 @@ Player.prototype.fromHole = function() {
 Player.prototype.bodyCollision = function() {
     for (var i = 1; i < this.aBody.length; i++) {
         if (this.aBody[0].x == this.aBody[i].x && this.aBody[0].y == this.aBody[i].y) {
+            theme.load();
             reset();
         }
     }
@@ -250,6 +253,7 @@ Player.prototype.mapCollision = function() {
     var arrX = Math.floor(this.aBody[0].x / 10);
     var arrY = Math.floor(this.aBody[0].y / 10);
     if (aMap[arrX][arrY].name == "wall") {
+        theme.load();
         reset();
     }
 }

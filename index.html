@@ -4,41 +4,18 @@
     <title>Snake Advanced</title>
 </head>
 <body>
-<script src="images.js"></script>
+<script src="media.js"></script>
 <script src="Hole.js"></script>
 <script src="Player.js"></script>
 <script src="Food.js"></script>
 <script src="Generator.js"></script>
+<script src="gameDifficulty.js"></script>
 <script>
     var canvas = document.createElement("canvas");
     var ctx = canvas.getContext("2d");
     canvas.width = 320;
     canvas.height = 320;
     document.body.appendChild(canvas);
-
-    function GameDifficulty(GD) {
-        if (GD == "easy") {
-            this.lineFromHole = 12;
-            this.randomLow = 2;
-            this.randomHigh = 4;
-            this.speed = 100;
-        } else if (GD == "normal") {
-            this.lineFromHole = 10;
-            this.randomLow = 2;
-            this.randomHigh = 4;
-            this.speed = 80;
-        } else if (GD == "hard") {
-            this.lineFromHole = 8;
-            this.randomLow = 4;
-            this.randomHigh = 6;
-            this.speed = 60;
-        } else if (GD == "jebe") {
-            this.lineFromHole = 5;
-            this.randomLow = 5;
-            this.randomHigh = 7;
-            this.speed = 40;
-        }
-    }
 
     var keysDown = {};
     var timing = 0;
@@ -59,6 +36,7 @@
     var logoDelay = 0;
     var playConfirm = false;
     var holeAnimationFix = false;
+    var diff = false;
 
     addEventListener("keydown", function (e) {
         if (score > 1 && score % 10 == 1 && antiMovementPeriod < 3) {
@@ -73,7 +51,7 @@
     }, false);
 
     var reset = function() {
-        score = 9;
+        score = 0;
         player.reset();
         food.spawn(hole);
         generateMap = false;
@@ -91,12 +69,18 @@
             aMap = [];
         }
 
+        var animationLength = 0;
         hole.update();
         player.update(delta);
         player.bodyCollision();
         if (score > 1 && score % 10 == 0) {
             if (holeAnimation) {
-                if (animationCounter == 5) {
+                if (player.aBody.length < 10) {
+                    animationLength = player.aBody.length;
+                } else {
+                    animationLength = 10;
+                }
+                if (animationCounter == animationLength) {
                     holeAnimation = false;
                     animationCounter = 0;
                     player.aBodyAnimation = [];
@@ -137,23 +121,23 @@
     }
 
     var render = function() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.strokeStyle="#FF0000";
-        ctx.strokeRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(bg, 0, 0);
 
         if (generateMap) {
+            /*
             for (var i = 0; i < 32; i++) {
                 for (var j = 0; j < 32; j++) {
                     if (aMap[i][j].name == "wall") {
-                        ctx.fillStyle = "rgba(150, 150, 150, 1)";
+                        ctx.fillStyle = "rgba(150, 150, 150, 0.6)";
                     } else if (aMap[i][j].name == "way") {
-                        ctx.fillStyle = "rgba(10, 200, 10, 1)";
+                        ctx.fillStyle = "rgba(10, 200, 10, 0.3)";
                     } else if (aMap[i][j].name == "hole") {
-                        ctx.fillStyle = "rgba(250, 10, 10, 1)";
+                        ctx.fillStyle = "rgba(250, 10, 10, 0.3)";
                     }
                     ctx.fillRect(i * 10, j * 10, 10, 10);
                 }
-            }
+            }*/
+            mapRender();
         }
         if (score > 2 && (score % 10 == 0 || score % 10 == 1)){
             hole.render();
@@ -183,15 +167,18 @@
             } else if (keysDown[74]) {
                 gameDif = new GameDifficulty("jebe");
             }
+            theme.load();
             reset();
             playConfirm = true;
             return;
         }
 
         logoDelay += delta;
-        if (logoDelay < 2500) {
+        if (logoDelay < 2000) {
             ctx.drawImage(goldenGod, 0, 0);
-        } else if (logoDelay >= 2500 && !playConfirm) {
+        } else if (logoDelay >= 2000 && logoDelay < 4000) {
+            ctx.drawImage(snakeL, 0, 0);
+        } else if (logoDelay >= 4000 && !playConfirm) {
             render();
             ctx.fillStyle = "rgb(150, 150, 150)";
             ctx.fillRect(20, canvas.height / 2 - 40, canvas.width - 40, 160);
@@ -208,6 +195,7 @@
         } else {
             update(delta);
             render();
+            theme.play();
         }
 
         then = now;

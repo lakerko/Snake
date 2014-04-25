@@ -15,6 +15,10 @@ Hole.prototype.update = function() {
 }
 
 Hole.prototype.render = function() {
-    ctx.fillStyle = "rgba(255, 0 , 0, 1)";
-    ctx.fillRect(this.x, this.y, this.size, this.size);
+    if (score % 10 == 0) {
+        ctx.drawImage(holeBG, this.x - 10, this.y -10);
+    } else if (score % 10 == 1) {
+        ctx.drawImage(holeMGR, this.x - 20, this.y -10);
+        ctx.drawImage(holeMGU, 40, 0);
+    }
 }

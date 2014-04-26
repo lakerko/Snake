@@ -5,7 +5,7 @@ function Hole() {
 }
 
 Hole.prototype.update = function() {
-    if (score > 1 && score % 10 == 1){
+    if (score > 2 && score % 10 == 1){
         this.x = canvas.width - 20;
         this.y = canvas.height / 2 - 10;
     } else {

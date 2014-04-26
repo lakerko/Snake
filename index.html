@@ -37,6 +37,7 @@
     var playConfirm = false;
     var holeAnimationFix = false;
     var diff = false;
+    var muting = false;
 
     addEventListener("keydown", function (e) {
         if (score > 1 && score % 10 == 1 && antiMovementPeriod < 3) {
@@ -195,7 +196,10 @@
         } else {
             update(delta);
             render();
-            theme.play();
+            if (!muting) {
+                theme.play();
+            }
+
         }
 
         then = now;
@@ -205,5 +209,16 @@
     var then = Date.now();
     setInterval(main, 1);
 </script>
+<script>
+    function soundMute() {
+        if (muting) {
+            muting = false;
+        } else {
+            theme.load();
+            muting = true;
+        }
+    }
+</script>
+<button onclick="soundMute()">Mute on/off</button>
 </body>
 </html>

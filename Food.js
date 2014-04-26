@@ -25,7 +25,7 @@ Food.prototype.spawn = function(target) {
             }
         }
     }
-    if (score > 0 && (score % 10 == 0 || score % 10 == 1)) {
+    if (score > 2 && (score % 10 == 0 || score % 10 == 1)) {
         this.x = target.x;
         this.y = target.y;
     } else {

@@ -211,14 +211,17 @@
 </script>
 <script>
     function soundMute() {
+        var elem = document.getElementById("soundButton");
         if (muting) {
             muting = false;
+            elem.value = "Mute";
         } else {
             theme.load();
             muting = true;
+            elem.value = "UnMute";
         }
     }
 </script>
-<button onclick="soundMute()">Mute on/off</button>
+<input onclick="soundMute()" type="button" value="Mute" id="soundButton"></input>
 </body>
 </html>
